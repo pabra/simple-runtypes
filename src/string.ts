@@ -39,7 +39,7 @@ export function string(options?: {
 
   const isPure = !trim // trim modifies the string
 
-  return internalRuntype((v, failOrThrow) => {
+  const runtype = internalRuntype((v, failOrThrow) => {
     const s: string = (stringRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(s)) {
@@ -68,4 +68,20 @@ export function string(options?: {
 
     return trim ? s.trim() : s
   }, isPure)
+
+  ;(runtype as any).schema = {
+    type: 'string',
+    params: { minLength, maxLength, trim, match },
+  } as SchemaString
+
+  return runtype
+}
+
+type SchemaString = {
+  type: 'string'
+  params: Exclude<Parameters<typeof string>[0], undefined>
+}
+
+export function toSchema(_runtype: Runtype<string>): string {
+  return 'string'
 }
