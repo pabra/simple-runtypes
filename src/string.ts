@@ -7,6 +7,16 @@ import {
   Runtype,
 } from './runtype'
 
+const pureSchema: SchemaString = {
+  type: 'string',
+  params: {
+    minLength: undefined,
+    maxLength: undefined,
+    trim: undefined,
+    match: undefined,
+  },
+}
+
 const stringRuntype = internalRuntype<string>((v, failOrThrow) => {
   if (typeof v === 'string') {
     return v
@@ -14,6 +24,8 @@ const stringRuntype = internalRuntype<string>((v, failOrThrow) => {
 
   return createFail(failOrThrow, 'expected a string', v)
 }, true)
+
+;(stringRuntype as any).schema = pureSchema
 
 /**
  * A string.
@@ -71,7 +83,12 @@ export function string(options?: {
 
   const schema: SchemaString = {
     type: 'string',
-    params: { minLength, maxLength, trim, match },
+    params: {
+      minLength,
+      maxLength,
+      trim,
+      match,
+    },
   }
 
   ;(runtype as any).schema = schema
