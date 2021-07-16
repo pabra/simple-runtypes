@@ -69,10 +69,12 @@ export function string(options?: {
     return trim ? s.trim() : s
   }, isPure)
 
-  ;(runtype as any).schema = {
+  const schema: SchemaString = {
     type: 'string',
     params: { minLength, maxLength, trim, match },
-  } as SchemaString
+  }
+
+  ;(runtype as any).schema = schema
 
   return runtype
 }
