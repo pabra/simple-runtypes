@@ -16,11 +16,15 @@ export function createError(msg: string): Fail {
   return createFail(failSymbol, msg)
 }
 
+export type Meta = { type: 'custom' }
+
+const meta: Meta = { type: 'custom' }
+
 /**
  * Construct a custom runtype from a validation function.
  */
 export function runtype<T>(fn: (v: unknown) => T | Fail): Runtype<T> {
-  return internalRuntype<any>((v, failOrThrow) => {
+  const rt = internalRuntype<any>((v, failOrThrow) => {
     const res = fn(v)
 
     if (isFail(res)) {
@@ -29,6 +33,10 @@ export function runtype<T>(fn: (v: unknown) => T | Fail): Runtype<T> {
 
     return res
   })
+
+  ;(rt as any).meta = meta
+
+  return rt
 }
 
 /**
@@ -61,4 +69,9 @@ export function use<T>(r: Runtype<T>, v: unknown): ValidationResult<T> {
   }
 
   return { ok: true, result }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function toSchema(): string {
+  return 'any'
 }

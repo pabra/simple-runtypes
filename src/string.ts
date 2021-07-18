@@ -7,14 +7,12 @@ import {
   Runtype,
 } from './runtype'
 
-const pureSchema: SchemaString = {
+export type Meta = {
+  type: 'string'
+}
+
+const meta: Meta = {
   type: 'string',
-  params: {
-    minLength: undefined,
-    maxLength: undefined,
-    trim: undefined,
-    match: undefined,
-  },
 }
 
 const stringRuntype = internalRuntype<string>((v, failOrThrow) => {
@@ -25,7 +23,7 @@ const stringRuntype = internalRuntype<string>((v, failOrThrow) => {
   return createFail(failOrThrow, 'expected a string', v)
 }, true)
 
-;(stringRuntype as any).schema = pureSchema
+;(stringRuntype as any).meta = meta
 
 /**
  * A string.
@@ -81,26 +79,11 @@ export function string(options?: {
     return trim ? s.trim() : s
   }, isPure)
 
-  const schema: SchemaString = {
-    type: 'string',
-    params: {
-      minLength,
-      maxLength,
-      trim,
-      match,
-    },
-  }
-
-  ;(runtype as any).schema = schema
+  ;(runtype as any).meta = meta
 
   return runtype
 }
 
-type SchemaString = {
-  type: 'string'
-  params: Exclude<Parameters<typeof string>[0], undefined>
-}
-
-export function toSchema(_runtype: Runtype<string>): string {
+export function toSchema(): string {
   return 'string'
 }

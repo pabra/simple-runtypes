@@ -9,13 +9,15 @@ import {
 import { debugValue } from './runtypeError'
 import type { Runtype, InternalRuntype, Fail } from './runtype'
 
+export type Meta = { type: 'dictionary'; valueRuntype: Runtype<any> }
+
 function dictionaryRuntype<T extends string, U>(
   keyRuntype: Runtype<T>,
   valueRuntype: Runtype<U>,
 ) {
   const isPure = isPureRuntype(keyRuntype) && isPureRuntype(valueRuntype)
 
-  return internalRuntype<Record<T, U>>((v, failOrThrow) => {
+  const runtype = internalRuntype<Record<T, U>>((v, failOrThrow) => {
     const o: object | Fail = (objectRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(o)) {
@@ -76,6 +78,12 @@ function dictionaryRuntype<T extends string, U>(
 
     return res
   }, isPure)
+
+  const meta: Meta = { type: 'dictionary', valueRuntype }
+
+  ;(runtype as any).meta = meta
+
+  return runtype
 }
 
 /**
@@ -89,4 +97,14 @@ export function dictionary<T extends Runtype<any>, U extends Runtype<any>>(
   valueRuntype: U,
 ): Runtype<Record<ReturnType<T>, ReturnType<U>>> {
   return dictionaryRuntype(keyRuntype, valueRuntype)
+}
+
+export function toSchema(
+  runtype: Runtype<Record<ReturnType<any>, ReturnType<any>>>,
+  runtypeToSchema: (runtype: Runtype<any>) => string,
+): string {
+  const meta: Meta = (runtype as any).meta
+  const valueSchema = runtypeToSchema(meta.valueRuntype)
+
+  return `Record<string, ${valueSchema}>`
 }

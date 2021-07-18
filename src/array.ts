@@ -17,6 +17,11 @@ export const arrayRuntype = internalRuntype<unknown[]>((v, failOrThrow) => {
   return createFail(failOrThrow, `expected an Array`, v)
 }, true)
 
+export type Meta = {
+  type: 'array'
+  membersRuntype: Runtype<any>
+}
+
 /**
  * An array of a given type.
  *
@@ -33,7 +38,7 @@ export function array<A>(
 
   const isPure = isPureRuntype(a)
 
-  return internalRuntype<any>((v, failOrThrow) => {
+  const runtype = internalRuntype<any>((v, failOrThrow) => {
     const arrayValue = (arrayRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(arrayValue)) {
@@ -73,4 +78,23 @@ export function array<A>(
 
     return res
   }, isPure)
+
+  const meta: Meta = {
+    type: 'array',
+    membersRuntype: a,
+  }
+
+  ;(runtype as any).meta = meta
+
+  return runtype
+}
+
+export function toSchema(
+  runtype: Runtype<any[]>,
+  runtypeToSchema: (runtype: Runtype<any>) => string,
+): string {
+  const meta: Meta = (runtype as any).meta
+  const memberSchema = runtypeToSchema(meta.membersRuntype)
+
+  return `${memberSchema}[]`
 }

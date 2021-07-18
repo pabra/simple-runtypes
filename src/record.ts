@@ -13,6 +13,11 @@ import {
 } from './runtype'
 import { debugValue } from './runtypeError'
 
+export type Meta = {
+  type: 'record'
+  typemap: Record<any, Runtype<any> | OptionalRuntype<any>>
+}
+
 function isPureTypemap(typemap: object) {
   for (const k in typemap) {
     if (!Object.prototype.hasOwnProperty.call(typemap, k)) {
@@ -145,7 +150,14 @@ export function record<
       { [K in OptionalKeys]?: Unpack<Typemap[K]> }
   >
 > {
-  return internalRecord(typemap as any, false)
+  const runtype = internalRecord(typemap as any, false)
+  const meta: Meta = {
+    type: 'record',
+    typemap: (typemap as unknown) as Meta['typemap'],
+  }
+  ;(runtype as any).meta = meta
+
+  return runtype
 }
 
 /**
@@ -170,5 +182,23 @@ export function sloppyRecord<
       { [K in OptionalKeys]?: Unpack<Typemap[K]> }
   >
 > {
-  return internalRecord(typemap as any, true)
+  const runtype = internalRecord(typemap as any, true)
+  const meta: Meta = {
+    type: 'record',
+    typemap: (typemap as unknown) as Meta['typemap'],
+  }
+  ;(runtype as any).meta = meta
+
+  return runtype
+}
+
+export function toSchema(
+  runtype: Runtype<any>,
+  runtypeToSchema: (runtype: Runtype<any>) => string,
+): string {
+  const meta: Meta = (runtype as any).meta
+
+  return `{\n  ${Object.entries(meta.typemap)
+    .map(([k, v]) => `${k}: ${runtypeToSchema(v)};`)
+    .join('\n  ')}\n}`
 }
