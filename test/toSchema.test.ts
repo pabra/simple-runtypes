@@ -66,6 +66,11 @@ describe('toSchema', () => {
     expect(st.toSchema(falseRt)).toBe('false')
   })
 
+  it('should work with null', () => {
+    const runtype = st.null()
+    expect(st.toSchema(runtype)).toBe('null')
+  })
+
   it('should work with record', () => {
     const runtype = st.record({ a: st.string() })
     expect(st.toSchema(runtype)).toBe(

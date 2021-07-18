@@ -21,6 +21,8 @@ import { toSchema as jsonToSchema } from './json'
 import type { Meta as JsonMeta } from './json'
 import { toSchema as literalToSchema } from './literal'
 import type { Meta as LiteralMeta } from './literal'
+import { toSchema as nullToSchema } from './null'
+import type { Meta as NullMeta } from './null'
 import { toSchema as recordToSchema } from './record'
 import type { Meta as RecordMeta } from './record'
 import { toSchema as stringToSchema } from './string'
@@ -38,6 +40,7 @@ export type Meta =
   | IntegerMeta
   | JsonMeta
   | LiteralMeta
+  | NullMeta
   | RecordMeta
   | StringMeta
 
@@ -86,6 +89,9 @@ export function toSchema(runtype: Runtype<any>): string {
 
     case 'literal':
       return literalToSchema(runtype)
+
+    case 'null':
+      return nullToSchema()
 
     case 'record':
       return recordToSchema(runtype, toSchema)
