@@ -1,6 +1,7 @@
 import { optional } from './optional'
 import { record } from './record'
 import { Runtype, RuntypeUsageError } from './runtype'
+import type { Meta } from './toSchema'
 
 /**
  * Build a new record runtype that marks all keys as optional.
@@ -10,12 +11,13 @@ import { Runtype, RuntypeUsageError } from './runtype'
 export function partial<T, K extends keyof T>(
   original: Runtype<T>,
 ): Runtype<Partial<T>> {
-  const fields = (original as any).fields
+  const meta: Meta = (original as any).meta
 
-  if (!fields) {
+  if (meta.type !== 'record') {
     throw new RuntypeUsageError(`expected a record runtype`)
   }
 
+  const { fields } = meta
   const newRecordFields: any = {}
 
   for (const k in fields) {

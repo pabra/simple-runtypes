@@ -17,12 +17,16 @@ import { toSchema as ignoreToSchema } from './ignore'
 import type { Meta as IgnoreMeta } from './ignore'
 import { toSchema as integerToSchema } from './integer'
 import type { Meta as IntegerMeta } from './integer'
+import { toSchema as jsonToSchema } from './json'
+import type { Meta as JsonMeta } from './json'
+import { toSchema as literalToSchema } from './literal'
+import type { Meta as LiteralMeta } from './literal'
 import { toSchema as recordToSchema } from './record'
 import type { Meta as RecordMeta } from './record'
 import { toSchema as stringToSchema } from './string'
 import type { Meta as StringMeta } from './string'
 
-type Meta =
+export type Meta =
   | AnyMeta
   | ArrayMeta
   | BooleanMeta
@@ -32,6 +36,8 @@ type Meta =
   | GuardedByMeta
   | IgnoreMeta
   | IntegerMeta
+  | JsonMeta
+  | LiteralMeta
   | RecordMeta
   | StringMeta
 
@@ -59,7 +65,7 @@ export function toSchema(runtype: Runtype<any>): string {
       return dictionaryToSchema(runtype, toSchema)
 
     case 'enum':
-      return enumToSchema()
+      return enumToSchema(runtype)
 
     case 'guardedBy':
       return guardedByToSchema()
@@ -69,6 +75,12 @@ export function toSchema(runtype: Runtype<any>): string {
 
     case 'integer':
       return integerToSchema()
+
+    case 'json':
+      return jsonToSchema()
+
+    case 'literal':
+      return literalToSchema(runtype)
 
     case 'record':
       return recordToSchema(runtype, toSchema)

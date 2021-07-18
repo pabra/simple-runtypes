@@ -12,6 +12,7 @@ import {
   Runtype,
   RuntypeUsageError,
 } from './runtype'
+import type { Meta } from './toSchema'
 import { debugValue } from './runtypeError'
 
 // A tagged union with type discriminant 'key'.
@@ -29,7 +30,15 @@ function internalDiscriminatedUnion(
   // build an index for fast runtype lookups by literal
   runtypes.forEach((t: any) => {
     const rt = t.fields[key]
-    const tagValue = rt.literal
+    const meta: Meta = rt.meta
+
+    if (meta.type !== 'literal') {
+      throw new RuntypeUsageError(
+        `broken record type definition, ${t}[${key}] is not a literal`,
+      )
+    }
+
+    const tagValue = meta.literal
 
     if (tagValue === undefined) {
       throw new RuntypeUsageError(

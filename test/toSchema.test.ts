@@ -30,8 +30,8 @@ describe('toSchema', () => {
   })
 
   it('should work with enum', () => {
-    const runtype = st.enum({ '1': 'one', '2': 'two' })
-    expect(st.toSchema(runtype)).toBe('string | number')
+    const runtype = st.enum({ '1': 'one', 2: 'two' })
+    expect(st.toSchema(runtype)).toBe('"1" | "2"')
   })
 
   it('should work with guardedBy', () => {
@@ -50,6 +50,20 @@ describe('toSchema', () => {
 
     expect(st.toSchema(runtype)).toBe('number')
     expect(st.toSchema(minRuntype)).toBe('number')
+  })
+
+  it('should work with json', () => {
+    const runtype = st.json(st.array(st.integer()))
+    expect(st.toSchema(runtype)).toBe('string')
+  })
+
+  it('should work with literal', () => {
+    const abcRt = st.literal('abc')
+    const oneRt = st.literal(1)
+    const falseRt = st.literal(false)
+    expect(st.toSchema(abcRt)).toBe('"abc"')
+    expect(st.toSchema(oneRt)).toBe('1')
+    expect(st.toSchema(falseRt)).toBe('false')
   })
 
   it('should with record', () => {

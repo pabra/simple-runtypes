@@ -9,15 +9,28 @@ import {
   Runtype,
   RuntypeUsageError,
 } from './runtype'
+import type { Meta as RuntypeMeta } from './toSchema'
+
+export type Meta = {
+  type: 'intersection'
+  fields: { [key: string]: Runtype<any> }
+}
 
 // An intersection of two record runtypes
 function recordIntersection2<A, B>(
   recordA: Runtype<A>,
   recordB: Runtype<B>,
 ): Runtype<A & B> {
-  const fields: { [key: string]: Runtype<any> } = {}
-  const a = (recordA as any).fields
-  const b = (recordB as any).fields
+  const fields: Meta['fields'] = {}
+  const aMeta: RuntypeMeta = (recordA as any).meta
+  const bMeta: RuntypeMeta = (recordB as any).meta
+
+  if (aMeta.type !== 'record' || bMeta.type !== 'record') {
+    throw new Error()
+  }
+
+  const a = aMeta.fields
+  const b = bMeta.fields
 
   for (const k in { ...a, ...b }) {
     if (a[k] && b[k]) {
@@ -66,13 +79,16 @@ function unionIntersection2<A, B>(
  */
 function intersection2<A, B>(a: Runtype<A>, b: Runtype<B>): Runtype<A & B>
 function intersection2(a: Runtype<any>, b: Runtype<any>): Runtype<any> {
-  if ('fields' in a && 'fields' in b) {
+  const aMeta: RuntypeMeta = (a as any).meta
+  const bMeta: RuntypeMeta = (b as any).meta
+
+  if (aMeta.type === 'record' && bMeta.type === 'record') {
     return recordIntersection2(a, b)
-  } else if ('unions' in a && 'fields' in b) {
+  } else if ('unions' in a && bMeta.type === 'record') {
     return unionIntersection2(a, b)
-  } else if ('unions' in b && 'fields' in a) {
+  } else if ('unions' in b && aMeta.type === 'record') {
     return unionIntersection2(b, a)
-  } else if ('fields' in a || 'fields' in b) {
+  } else if (aMeta.type === 'record' || bMeta.type === 'record') {
     // Does such an intersection (e.g. string | {a: number} even make sense?
     // And how would you implement it?
     throw new RuntypeUsageError(

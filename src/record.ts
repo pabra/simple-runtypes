@@ -15,7 +15,7 @@ import { debugValue } from './runtypeError'
 
 export type Meta = {
   type: 'record'
-  typemap: Record<any, Runtype<any> | OptionalRuntype<any>>
+  fields: { [key: string]: Runtype<any> }
 }
 
 function isPureTypemap(typemap: object) {
@@ -43,7 +43,7 @@ function internalRecord(
   const typemapKeys = [...Object.keys(typemap)]
   const typemapValues = [...Object.values(typemap)]
 
-  const rt = internalRuntype((v, failOrThrow) => {
+  const rt: any = internalRuntype((v, failOrThrow) => {
     // inlined object runtype for perf
     if (typeof v !== 'object' || Array.isArray(v) || v === null) {
       return createFail(failOrThrow, 'expected an object', v)
@@ -103,14 +103,13 @@ function internalRecord(
 
   // fields metadata to implement combinators like (discriminated) unions,
   // pick, omit and intersection
-  const fields: { [key: string]: any } = {}
+  const fields: Meta['fields'] = {}
 
   for (const k in typemap) {
     fields[k] = typemap[k]
   }
 
-  // eslint-disable-next-line no-extra-semi
-  ;(rt as any).fields = fields
+  const meta: Meta = { type: 'record', fields }
 
   return rt
 }
@@ -150,14 +149,7 @@ export function record<
       { [K in OptionalKeys]?: Unpack<Typemap[K]> }
   >
 > {
-  const runtype = internalRecord(typemap as any, false)
-  const meta: Meta = {
-    type: 'record',
-    typemap: (typemap as unknown) as Meta['typemap'],
-  }
-  ;(runtype as any).meta = meta
-
-  return runtype
+  return internalRecord(typemap as any, false)
 }
 
 /**
@@ -182,14 +174,7 @@ export function sloppyRecord<
       { [K in OptionalKeys]?: Unpack<Typemap[K]> }
   >
 > {
-  const runtype = internalRecord(typemap as any, true)
-  const meta: Meta = {
-    type: 'record',
-    typemap: (typemap as unknown) as Meta['typemap'],
-  }
-  ;(runtype as any).meta = meta
-
-  return runtype
+  return internalRecord(typemap as any, true)
 }
 
 export function toSchema(
@@ -198,7 +183,7 @@ export function toSchema(
 ): string {
   const meta: Meta = (runtype as any).meta
 
-  return `{\n  ${Object.entries(meta.typemap)
+  return `{\n  ${Object.entries(meta.fields)
     .map(([k, v]) => `${k}: ${runtypeToSchema(v)};`)
     .join('\n  ')}\n}`
 }

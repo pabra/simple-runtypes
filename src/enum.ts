@@ -2,9 +2,7 @@ import { createFail, internalRuntype, Runtype } from './runtype'
 import { debugValue } from './runtypeError'
 
 type EnumObject = { [key: string]: string | number }
-export type Meta = { type: 'enum' }
-
-const meta: Meta = { type: 'enum' }
+export type Meta = { type: 'enum'; enumObject: EnumObject }
 
 /**
  * Any value defined in the enumObject.
@@ -30,6 +28,8 @@ function enumRuntype<T extends EnumObject, S extends keyof T>(
     )
   }, true)
 
+  const meta: Meta = { type: 'enum', enumObject }
+
   ;(runtype as any).meta = meta
 
   return runtype
@@ -37,6 +37,9 @@ function enumRuntype<T extends EnumObject, S extends keyof T>(
 
 export { enumRuntype as enum }
 
-export function toSchema(): string {
-  return 'string | number'
+export function toSchema(runtype: Runtype<any>): string {
+  const meta: Meta = (runtype as any).meta
+  const keys = Object.keys(meta.enumObject)
+
+  return keys.map((k) => JSON.stringify(k)).join(' | ')
 }
