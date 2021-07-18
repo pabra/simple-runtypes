@@ -8,7 +8,7 @@ const meta: Meta = { type: 'guardedBy' }
  * A runtype based on a type guard
  */
 export function guardedBy<F>(typeGuard: (v: unknown) => v is F): Runtype<F> {
-  const runtype = internalRuntype((v, failOrThrow) => {
+  const runtype: any = internalRuntype((v, failOrThrow) => {
     if (!typeGuard(v)) {
       return createFail(failOrThrow, 'expected typeguard to return true', v)
     }
@@ -16,7 +16,7 @@ export function guardedBy<F>(typeGuard: (v: unknown) => v is F): Runtype<F> {
     return v
   }, true)
 
-  ;(runtype as any).meta = meta
+  runtype.meta = meta
 
   return runtype
 }

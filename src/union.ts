@@ -29,16 +29,26 @@ function internalDiscriminatedUnion(
 
   // build an index for fast runtype lookups by literal
   runtypes.forEach((t: any) => {
-    const rt = t.fields[key]
-    const meta: Meta = rt.meta
+    const tMeta: Meta = t.meta
 
-    if (meta.type !== 'literal') {
+    // TODO: remove line below
+    if (!tMeta || tMeta.type !== 'record') {
+      // if(tMeta.type !== 'record') {
+      throw new Error()
+    }
+
+    const rt: any = tMeta.fields[key]
+    const rtMeta: Meta = rt.meta
+
+    // TODO: remove line below
+    if (!rtMeta || rtMeta.type !== 'literal') {
+      // if (rtMeta.type !== 'literal') {
       throw new RuntypeUsageError(
         `broken record type definition, ${t}[${key}] is not a literal`,
       )
     }
 
-    const tagValue = meta.literal
+    const tagValue = rtMeta.literal
 
     if (tagValue === undefined) {
       throw new RuntypeUsageError(
@@ -96,7 +106,7 @@ function internalDiscriminatedUnion(
 function findDiscriminatingUnionKey(
   runtypes: Runtype<any>[],
 ): string | undefined {
-  const commonKeys = new Map<string, Set<string>>()
+  const commonKeys = new Map<string, Set<string | number | boolean>>()
 
   for (let i = 0; i < runtypes.length; i++) {
     const r = runtypes[i]
@@ -108,10 +118,13 @@ function findDiscriminatingUnionKey(
     }
 
     for (const f in fields) {
-      const fieldRuntype = fields[f]
-      const l = (fieldRuntype as any).literal
+      const fieldRuntype: any = fields[f]
+      const meta: Meta = fieldRuntype.meta
+      // const l = (fieldRuntype).literal
 
-      if (l !== undefined) {
+      // TODO: remove line below
+      if (meta && meta.type === 'literal') {
+        // if (meta.type === 'literal') {
         // found a literal value, add it to the field
         // if we get a distinct literalruntype, we can use the optimized
         // index-accessed internalDiscriminatedUnion runtype
@@ -119,7 +132,7 @@ function findDiscriminatingUnionKey(
           commonKeys.set(f, new Set())
         }
 
-        commonKeys.get(f)?.add(l)
+        commonKeys.get(f)?.add(meta.literal)
       }
     }
   }

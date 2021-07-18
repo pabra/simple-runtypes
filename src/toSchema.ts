@@ -48,6 +48,11 @@ function assertNever(x: never): never {
 export function toSchema(runtype: Runtype<any>): string {
   const meta: Meta = (runtype as any).meta
 
+  // TODO: remove
+  if (meta === undefined) {
+    throw new Error(`undefined meta: ${runtype}`)
+  }
+
   switch (meta.type) {
     case 'any':
       return anyToSchema()

@@ -11,14 +11,14 @@ export type Meta = { type: 'integer' }
 
 const meta: Meta = { type: 'integer' }
 
-export const integerRuntype = internalRuntype<number>((v, failOrThrow) => {
+export const integerRuntype: any = internalRuntype<number>((v, failOrThrow) => {
   if (typeof v === 'number' && Number.isSafeInteger(v)) {
     return v
   }
 
   return createFail(failOrThrow, 'expected a safe integer', v)
 }, true)
-;(integerRuntype as any).meta = meta
+integerRuntype.meta = meta
 
 /**
  * A Number that is a `isSafeInteger()`
@@ -38,7 +38,7 @@ export function integer(options?: {
 
   const { min, max } = options
 
-  const runtype = internalRuntype<number>((v, failOrThrow) => {
+  const runtype: any = internalRuntype<number>((v, failOrThrow) => {
     const n = (integerRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(n)) {
@@ -56,7 +56,7 @@ export function integer(options?: {
     return n
   }, true)
 
-  ;(runtype as any).meta = meta
+  runtype.meta = meta
 
   return runtype
 }

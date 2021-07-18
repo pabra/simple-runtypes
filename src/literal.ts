@@ -22,6 +22,7 @@ export function literal(lit: Literal): Runtype<any> {
   // keep the literal as metadata on the runtype itself to be able to use it
   // in record intersections to determine the right record runtype
   const meta: Meta = { type: 'literal', literal: lit }
+  rt.meta = meta
 
   return rt
 }

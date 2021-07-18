@@ -17,7 +17,7 @@ function dictionaryRuntype<T extends string, U>(
 ) {
   const isPure = isPureRuntype(keyRuntype) && isPureRuntype(valueRuntype)
 
-  const runtype = internalRuntype<Record<T, U>>((v, failOrThrow) => {
+  const runtype: any = internalRuntype<Record<T, U>>((v, failOrThrow) => {
     const o: object | Fail = (objectRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(o)) {
@@ -81,7 +81,7 @@ function dictionaryRuntype<T extends string, U>(
 
   const meta: Meta = { type: 'dictionary', valueRuntype }
 
-  ;(runtype as any).meta = meta
+  runtype.meta = meta
 
   return runtype
 }

@@ -110,20 +110,21 @@ function internalRecord(
   }
 
   const meta: Meta = { type: 'record', fields }
+  rt.meta = meta
 
   return rt
 }
 
-export function getRecordFields(
-  r: Runtype<any>,
-): { [key: string]: Runtype<any> } | undefined {
-  const anyRt: any = r
+export function getRecordFields(r: Runtype<any>): Meta['fields'] | undefined {
+  const meta: Meta = (r as any).meta
 
-  if (!anyRt.fields) {
+  // TODO: remove line below
+  if (!meta || meta.type !== 'record') {
+    // if (meta.type !== 'record') {
     return
   }
 
-  return anyRt.fields
+  return meta.fields
 }
 
 /**

@@ -82,13 +82,24 @@ function intersection2(a: Runtype<any>, b: Runtype<any>): Runtype<any> {
   const aMeta: RuntypeMeta = (a as any).meta
   const bMeta: RuntypeMeta = (b as any).meta
 
-  if (aMeta.type === 'record' && bMeta.type === 'record') {
+  // TODO: remove line below
+  if (aMeta && aMeta.type === 'record' && bMeta && bMeta.type === 'record') {
+    // if (aMeta.type === 'record' && bMeta.type === 'record') {
     return recordIntersection2(a, b)
-  } else if ('unions' in a && bMeta.type === 'record') {
+    // TODO: remove line below
+  } else if ('unions' in a && bMeta && bMeta.type === 'record') {
+    // } else if ('unions' in a && bMeta.type === 'record') {
     return unionIntersection2(a, b)
-  } else if ('unions' in b && aMeta.type === 'record') {
+    // TODO: remove line below
+  } else if ('unions' in b && aMeta && aMeta.type === 'record') {
+    // } else if ('unions' in b && aMeta.type === 'record') {
     return unionIntersection2(b, a)
-  } else if (aMeta.type === 'record' || bMeta.type === 'record') {
+    // TODO: remove line below
+  } else if (
+    (aMeta && aMeta.type === 'record') ||
+    (bMeta && bMeta.type === 'record')
+  ) {
+    // } else if (aMeta.type === 'record' || bMeta.type === 'record') {
     // Does such an intersection (e.g. string | {a: number} even make sense?
     // And how would you implement it?
     throw new RuntypeUsageError(

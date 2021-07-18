@@ -38,7 +38,7 @@ export function array<A>(
 
   const isPure = isPureRuntype(a)
 
-  const runtype = internalRuntype<any>((v, failOrThrow) => {
+  const runtype: any = internalRuntype<any>((v, failOrThrow) => {
     const arrayValue = (arrayRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(arrayValue)) {
@@ -84,7 +84,7 @@ export function array<A>(
     membersRuntype: a,
   }
 
-  ;(runtype as any).meta = meta
+  runtype.meta = meta
 
   return runtype
 }

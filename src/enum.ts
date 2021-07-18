@@ -10,7 +10,7 @@ export type Meta = { type: 'enum'; enumObject: EnumObject }
 function enumRuntype<T extends EnumObject, S extends keyof T>(
   enumObject: T,
 ): Runtype<T[S]> {
-  const runtype = internalRuntype((v, failOrThrow) => {
+  const runtype: any = internalRuntype((v, failOrThrow) => {
     // use the fast reverse lookup of number enums to check whether v is a
     // value of the enum
     if (typeof v === 'number' && (enumObject as any)[v as any] !== undefined) {
@@ -30,7 +30,7 @@ function enumRuntype<T extends EnumObject, S extends keyof T>(
 
   const meta: Meta = { type: 'enum', enumObject }
 
-  ;(runtype as any).meta = meta
+  runtype.meta = meta
 
   return runtype
 }

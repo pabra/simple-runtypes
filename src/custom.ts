@@ -24,7 +24,7 @@ const meta: Meta = { type: 'custom' }
  * Construct a custom runtype from a validation function.
  */
 export function runtype<T>(fn: (v: unknown) => T | Fail): Runtype<T> {
-  const rt = internalRuntype<any>((v, failOrThrow) => {
+  const rt: any = internalRuntype<any>((v, failOrThrow) => {
     const res = fn(v)
 
     if (isFail(res)) {
@@ -34,7 +34,7 @@ export function runtype<T>(fn: (v: unknown) => T | Fail): Runtype<T> {
     return res
   })
 
-  ;(rt as any).meta = meta
+  rt.meta = meta
 
   return rt
 }

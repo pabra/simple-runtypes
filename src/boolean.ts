@@ -1,6 +1,11 @@
 import { createFail, internalRuntype, Runtype } from './runtype'
 
-const booleanRuntype = internalRuntype<boolean>((v, failOrThrow) => {
+export type Meta = {
+  type: 'boolean'
+}
+
+const meta: Meta = { type: 'boolean' }
+const booleanRuntype: any = internalRuntype<boolean>((v, failOrThrow) => {
   if (v === true || v === false) {
     return v
   }
@@ -8,13 +13,7 @@ const booleanRuntype = internalRuntype<boolean>((v, failOrThrow) => {
   return createFail(failOrThrow, 'expected a boolean', v)
 }, true)
 
-export type Meta = {
-  type: 'boolean'
-}
-
-const meta: Meta = { type: 'boolean' }
-
-;(booleanRuntype as any).meta = meta
+booleanRuntype.meta = meta
 
 /**
  * A boolean.

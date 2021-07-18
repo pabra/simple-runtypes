@@ -29,7 +29,7 @@ const jsonRuntype = internalRuntype<unknown>((v, failOrThrow) => {
  * A String that is valid json
  */
 export function json<T>(rt: Runtype<any>): Runtype<T> {
-  const runtype = internalRuntype<T>((v, failOrThrow) => {
+  const runtype: any = internalRuntype<T>((v, failOrThrow) => {
     const n = (jsonRuntype as InternalRuntype)(v, failOrThrow)
 
     if (isFail(n)) {
@@ -45,7 +45,7 @@ export function json<T>(rt: Runtype<any>): Runtype<T> {
     return validationResult.result
   }, true)
 
-  ;(runtype as any).meta = meta
+  runtype.meta = meta
 
   return runtype
 }

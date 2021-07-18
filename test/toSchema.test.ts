@@ -66,7 +66,7 @@ describe('toSchema', () => {
     expect(st.toSchema(falseRt)).toBe('false')
   })
 
-  it('should with record', () => {
+  it('should work with record', () => {
     const runtype = st.record({ a: st.string() })
     expect(st.toSchema(runtype)).toBe(
       [
@@ -78,7 +78,7 @@ describe('toSchema', () => {
     )
   })
 
-  it('should with sloppy record', () => {
+  it('should work with sloppy record', () => {
     const runtype = st.sloppyRecord({ a: st.string() })
     expect(st.toSchema(runtype)).toBe(
       [
@@ -90,7 +90,7 @@ describe('toSchema', () => {
     )
   })
 
-  it('should with string', () => {
+  it('should work with string', () => {
     const impureRuntype = st.string({ trim: true })
     const pureRuntype = st.string()
 

@@ -13,7 +13,9 @@ export function partial<T, K extends keyof T>(
 ): Runtype<Partial<T>> {
   const meta: Meta = (original as any).meta
 
-  if (meta.type !== 'record') {
+  // TODO: remove line below
+  if (!meta || meta.type !== 'record') {
+    // if (meta.type !== 'record') {
     throw new RuntypeUsageError(`expected a record runtype`)
   }
 
